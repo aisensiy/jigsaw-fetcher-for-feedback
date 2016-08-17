@@ -47,7 +47,7 @@ def get_all_people_in_office(office='Beijing'):
 
 
 def people_to_csv(peoples, filename):
-    header = ['employeeId', 'loginName', 'preferredName', 'role', 'grade', 'department', 'assignable']
+    header = ['employeeId', 'loginName', 'preferredName', 'role', 'grade', 'department', 'home_office']
     result = []
     for people in peoples:
         result.append([
@@ -57,48 +57,8 @@ def people_to_csv(peoples, filename):
             people['role']['name'],
             people['grade']['name'],
             people['department']['name'],
-            people['assignable']
-        ])
-    df = pd.DataFrame(result, columns=header)
-    df.to_csv(filename, index=None, encoding='utf8')
-
-
-def get_employee_assignment(ids):
-    url = "https://jigsaw.thoughtworks.com/api/assignments.json"
-    print 'get', url
-    querystring = {"current_only": True, 'employee_ids[]': ids}
-    headers = {
-        'authorization': JIGSAW_TOKEN,
-        'cache-control': "no-cache"
-    }
-
-    response = fetch(url, headers, querystring)
-    assignments = response.json()
-    return assignments
-
-
-def fetch_assignments(ids):
-    pagination = 10
-    total = len(ids)
-    assignments = []
-    for i in range(0, total, pagination):
-        assignments += get_employee_assignment(ids[i:i + pagination])
-        time.sleep(10)
-    return assignments
-
-
-def assignment_to_csv(entities, filename):
-    header = ['id', 'employeeId', 'account', 'projectId', 'projectName', 'startsOn', 'endsOn']
-    result = []
-    for entity in entities:
-        result.append([
-            entity['id'],
-            entity['consultant']['employeeId'],
-            entity['account']['name'],
-            entity['project']['id'],
-            entity['project']['name'],
-            entity['duration']['startsOn'],
-            entity['duration']['endsOn']
+            people['assignable'],
+            people['homeOffice']['name']
         ])
     df = pd.DataFrame(result, columns=header)
     df.to_csv(filename, index=None, encoding='utf8')
@@ -112,8 +72,3 @@ def main():
         peoples += get_all_people_in_office(office)
 
     people_to_csv(peoples, 'peoples.csv')
-
-    peoples = pd.read_csv('peoples.csv')
-    ids = peoples['employeeId'].tolist()
-    assignments = fetch_assignments(ids)
-    assignment_to_csv(assignments, 'assignments.csv')
