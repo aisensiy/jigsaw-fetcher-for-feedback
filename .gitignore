@@ -1,0 +1,7 @@
+*.ims
+*.swp
+*.pyc
+*.csv
+*.sql
+.idea/
+.local/
