@@ -1,6 +1,6 @@
 import os
 
 JIGSAW_TOKEN = os.getenv('JIGSAW_TOKEN')
-ENTRYPOINT = os.getenv('ENTRYPOINT', 'http://ketsu-backend.aisensiy.com')
-USERNAME = os.getenv('USERNAME', 'admin')
-PASSWORD = os.getenv('PASSWORD', '123')
+FEEDBACK_ENTRYPOINT = os.getenv('FEEDBACK_ENTRYPOINT', 'http://ketsu-backend.aisensiy.com')
+FEEDBACK_USERNAME = os.getenv('FEEDBACK_USERNAME', 'admin')
+FEEDBACK_PASSWORD = os.getenv('FEEDBACK_PASSWORD', '123')

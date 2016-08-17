@@ -57,7 +57,6 @@ def people_to_csv(peoples, filename):
             people['role']['name'],
             people['grade']['name'],
             people['department']['name'],
-            people['assignable'],
             people['homeOffice']['name']
         ])
     df = pd.DataFrame(result, columns=header)
@@ -72,3 +71,6 @@ def main():
         peoples += get_all_people_in_office(office)
 
     people_to_csv(peoples, 'peoples.csv')
+
+if __name__ == "__main__":
+    main()
