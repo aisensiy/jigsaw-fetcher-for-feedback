@@ -16,7 +16,7 @@ def fetch(url, headers, querystring):
 
 
 def get_all_people_in_office(office='Beijing'):
-    url = "https://jigsaw.thoughtworks.com/api/people.json"
+    url = "https://jigsaw.thoughtworks.net/api/people.json"
     querystring = {"home_office": office}
     headers = {
         'authorization': JIGSAW_TOKEN,

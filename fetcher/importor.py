@@ -5,6 +5,7 @@ import pandas as pd
 import requests
 import sys
 import config
+from requests.adapters import HTTPAdapter
 
 API_PREFIX = config.FEEDBACK_ENTRYPOINT
 bg_user_name = config.FEEDBACK_USERNAME
@@ -13,6 +14,7 @@ bg_password = config.FEEDBACK_PASSWORD
 
 def login():
     session = requests.Session()
+    session.mount(prefix="", adapter=HTTPAdapter(max_retries=5))
     r = session.post(API_PREFIX + '/authentication',
                      json={'username': bg_user_name, 'password': bg_password})
     print 'login get status', r.status_code
@@ -29,7 +31,7 @@ def get_type(department):
 
 
 def import_users(session, peoples):
-    for idx, row in peoples.iterrows():
+    for _, row in peoples.iterrows():
         data = {
             'id': (row['employeeId']),
             'username': (row['loginName']),
@@ -43,12 +45,12 @@ def import_users(session, peoples):
             'department': (row['department'])
         }
 
-        r = session.get(API_PREFIX + '/users/' + str(row['employeeId']))
+        r = session.get(API_PREFIX + '/users/' + str(row['loginName']))
         if r.status_code == 200:
-            r = session.put(API_PREFIX + '/users/' + str(row['employeeId']), json=data)
+            r = session.put(API_PREFIX + '/users/' + str(row['loginName']), json=data)
         else:
             r = session.post(API_PREFIX + '/users', json=data)
-        if r.status_code == 201 or r.status_code == 204:
+        if r.status_code == 201 or r.status_code == 204 or r.status_code == 200:
             print 'import', str(row['employeeId']), str(row['loginName'])
         else:
             print 'failed for import user', str(row['loginName'])
