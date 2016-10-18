@@ -28,7 +28,9 @@ def get_all_people_in_office(office='Beijing'):
     if response.status_code == 200:
         peoples = response.json()
         total = int(response.headers.get('x-total-pages'))
+        total_count = int(response.headers.get('x-total-count'))
         print 'total page', str(total)
+        print 'total count', str(total_count)
     else:
         print 'failed to get data'
         sys.exit(1)
@@ -47,7 +49,7 @@ def get_all_people_in_office(office='Beijing'):
 
 
 def people_to_csv(peoples, filename):
-    header = ['employeeId', 'loginName', 'preferredName', 'role', 'grade', 'department', 'home_office']
+    header = ['employeeId', 'loginName', 'preferredName', 'role', 'grade', 'department', 'home_office', 'avatarUrl']
     result = []
     for people in peoples:
         result.append([
@@ -57,7 +59,8 @@ def people_to_csv(peoples, filename):
             people['role']['name'],
             people['grade']['name'],
             people['department']['name'],
-            people['homeOffice']['name']
+            people['homeOffice']['name'],
+            people['picture']['url']
         ])
     df = pd.DataFrame(result, columns=header)
     df.to_csv(filename, index=None, encoding='utf8')

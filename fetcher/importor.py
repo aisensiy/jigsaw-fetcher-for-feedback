@@ -30,6 +30,15 @@ def get_type(department):
         return "NORMAL"
 
 
+def user_equal(user1, user2):
+    keys = ['img', 'role', 'nickname', 'department', 'type', 'email', 'username']
+    for key in keys:
+        if user1[key] != user2[key]:
+            print '%s not equal %s != %s' % (key, str(user1[key]), str(user2[key]))
+            return False
+    return True
+
+
 def import_users(session, peoples):
     for _, row in peoples.iterrows():
         data = {
@@ -42,14 +51,19 @@ def import_users(session, peoples):
             'type': (get_type(row['department'])),
             'home_office': (row['home_office']),
             'password': (row['loginName']),
-            'department': (row['department'])
+            'department': (row['department']),
+            'img': row['avatarUrl']
         }
 
         r = session.get(API_PREFIX + '/users/' + str(row['loginName']))
-        if r.status_code == 200:
+        if r.status_code == 200 and not user_equal(r.json(), data):
             r = session.put(API_PREFIX + '/users/' + str(row['loginName']), json=data)
-        else:
+        elif r.status_code == 404:
             r = session.post(API_PREFIX + '/users', json=data)
+        else:
+            print 'skip', str(row['loginName'])
+            continue
+
         if r.status_code == 201 or r.status_code == 204 or r.status_code == 200:
             print 'import', str(row['employeeId']), str(row['loginName'])
         else:
